@@ -1,0 +1,19 @@
+formdata를 사용해서 ajax로 데이터를 보냄
+<script>
+    var xhr = new XMLHttpRequest();
+    var formData = new FormData();//데이터를 동적으로 제어
+    formData.append('name','lin');
+    formData.append('age',20);
+    xhr.onreadystatechange = function(){
+        if(xhr.readyState === xhr.DONE){
+            if(xhr.status ===200 || xhr.status===201){
+                console.log(xhr.responseText);
+            }else{
+                console.log(xhr.responseText);
+            }
+        }
+        
+    };
+    xhr.open('POST','https://www.api~');
+    xhr.send(formData);
+</script>

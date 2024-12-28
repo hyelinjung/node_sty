@@ -1,0 +1,15 @@
+//app.js의 router.get('/',function(req,res,next){res.locals.title ='Express'; res.render('test');});
+//위의 라우터 코드로 받은 변수를 템플릿에 적용하는 코드
+
+doctype html
+html
+    head
+        meta(charset="UTF-8")
+        meta(name="viewport", content="width=device-width, initial-scale=1.0")
+        title= title
+        link(rel='stylesheet', href='/stylesheets/style.css')
+    body 
+        h1=title 
+        p Welcome to #{title}
+        button(type='submit' class= title) 전송
+        input(placeholder= title +'연습')
