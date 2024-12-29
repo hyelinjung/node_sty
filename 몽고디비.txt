@@ -1,0 +1,76 @@
+※몽고디비의 특징 중 하나는 자바스크립트 문법을 사용한다는 것-> noSql
+-nosql에는 고정된 테이블이 없다. 즉 컬럼을 따로 정의하지는 않는다.
+-테이블 = 컬렉션에는 어떠한 데이터라도 다 들어갈 수 있고 join 기능이 없다. 
+-트랜잭션 기능을 지원하지 않는다
+-> 트랜잭션이란? A쿼리를 실행 후 그 데이터를 가지고 B쿼리를 실행한다고 할때 둥간에 에러가 생겨 하나의 쿼리만 수행되면 
+데이터의 일관성에 문제가 생길 수 있어 이러한 문제를 발생하지 않도록 보장하는 것
+-그럼 왜 사용하나
+->확장성과 가용성 때문..애플을 만들때 꼭 한가지 디비만 사용하지 않고 sql, nosql을 섞어서 사용해도됨 
+
+-sql에서 테이블 로우 컬럼이 nosql에서 컬렉션 다큐먼트 필드 임
+-지료형중 ObjectId는 mysql에서 기본키와 기능이 같다
+
+※명령어
+-디비 만드는 :user 데이터베이스명
+-디비 목록 확인 : show dbs
+-현재 사용하는 디비 확인 : db
+-컬렉션을 따로 생성하진 않지만 명령어는 존재: db.createCollection('컬렉션')
+-crud
+->C : db.users(컬렉션명).save(js와 같이 객체 생성하듯 하면 됨)
+->R: db.users.find({}); 모든 다큐먼트 조회 & db.users.find({},{_id: 0, name:1 }); name 필드만 가져옴, 조회 시 조건을 추가하려면 db.users.find({age:{ $gt: 30}, married:true},{_id:0,name:1}); 나이가 30초가 married가 true인 조건 마치 where부분
+
+-컬렉션을 따로 생성할 필요없이 다큐먼트를 넣는 순간 컬렉션도 자동 생성
+
+※몽구스
+->노드와 몽고디비를 연동하고 쿼리까지 만들어주는 라이브러리
+->ODM(Object Document Mapping)이라고 한다. 릴레이션이 아니라 다큐먼트를 사용하기 때문에
+->스키마가 생겨 데이터를 안정적이게 저장가능-> 몽구스는 몽고디비에 데이터를 넣기 전 노드 서버 단에서 데이터를 한 번 필터링하는 역할을 해준다.
+->join기능을 메서드로 보안해서 관계가 있는 데이터를 쉽게 가져올 수 있다.
+
+※몽구스 model()를 사용해 쿼리사용
+model()은 몽고디비 컬렉션과 상호작용하는 방법을 정의하는 역할을 하고 데이터를 추가,수정, 삭제 및 조회하는 데 사용된다.
+model함수는 특정 스키마를 기반으로 모델을 생성하고 이를 통해 몽고디비와 상호작용할 수 있게한다
+->기본 문법
+const mongoose = require('mongoose');
+
+// 1. 스키마 정의
+const Schema = mongoose.Schema;
+
+const userSchema = new Schema({
+  name: { type: String, required: true },
+  age: { type: Number, required: true },
+  married: { type: Boolean, default: false }
+});
+
+// 2. 모델 정의
+const User = mongoose.model('User', userSchema);
+
+// 3. 모델을 사용하여 데이터 작업 (예: 데이터 삽입)
+const newUser = new User({
+  name: 'John',
+  age: 30,
+  married: true
+});
+
+newUser.save().then(() => console.log('User saved!'));
+
+사용자 조회:
+User.find({ age: { $gt: 20 } }).then(users => {
+  console.log(users);
+}).catch(err => {
+  console.error('Error finding users:', err);
+});
+
+사용자 업데이트:
+User.updateOne({ name: 'Alice' }, { $set: { married: true } }).then(result => {
+  console.log('User updated:', result);
+}).catch(err => {
+  console.error('Error updating user:', err);
+});
+
+사용자 삭제:
+User.deleteOne({ name: 'Alice' }).then(result => {
+  console.log('User deleted:', result);
+}).catch(err => {
+  console.error('Error deleting user:', err);
+});
